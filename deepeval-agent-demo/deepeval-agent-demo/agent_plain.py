@@ -60,7 +60,7 @@ def get_refund_policy(category: str) -> str:
 # ---------------------------------------------------------------------------
 # The agent — a LangGraph ReAct agent powered by Claude.
 # ---------------------------------------------------------------------------
-llm = ChatAnthropic(model="claude-sonnet-4-6", temperature=0)
+llm = ChatAnthropic(model="claude-sonnet-4-6")
 
 agent = create_agent(
     model=llm,
@@ -83,4 +83,4 @@ def support_agent(user_input: str) -> str:
 
 
 if __name__ == "__main__":
-    print(support_agent("Where is my order ORD-1099?"))
+    print(support_agent("Where is my order ORD-1042?"))

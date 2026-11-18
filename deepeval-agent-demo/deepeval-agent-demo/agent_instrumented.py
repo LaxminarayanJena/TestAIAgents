@@ -19,6 +19,7 @@ without ever touching this file again.
 
 import asyncio
 import os
+import sys
 
 import nest_asyncio
 nest_asyncio.apply()
@@ -76,13 +77,13 @@ def get_refund_policy(category: str) -> str:
 # ---------------------------------------------------------------------------
 # Same agent as agent_plain.py.
 # ---------------------------------------------------------------------------
-llm = ChatAnthropic(model="claude-sonnet-4-6", temperature=0)
+llm = ChatAnthropic(model="claude-sonnet-4-6")
 
 # Load one extra tool from the MCP server at startup and merge it in.
 _mcp_tools = asyncio.run(
     MultiServerMCPClient({
         "shopease": {
-            "command": "python",
+            "command": sys.executable,
             "args": [os.path.join(os.path.dirname(os.path.abspath(__file__)), "mcp_server.py")],
             "transport": "stdio",
         }
