@@ -4,3 +4,9 @@ TestCases(Goldens) </br>
 Judge LLM </br>
 Tracing/Instrumentation -hooks into langchain </br>
 test runner- Integration with pytest or standalaone evaluate() methods </br>
+
+
+
+Prompt alignment: at least 0.7  </br>
+Step efficiency: at least 0.5   </br>
+Answer relevance: at least 0.7  </br>

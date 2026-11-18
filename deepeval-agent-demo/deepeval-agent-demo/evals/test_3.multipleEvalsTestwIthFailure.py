@@ -5,6 +5,7 @@ sys.path.insert( 0, os.path.dirname( os.path.dirname( os.path.abspath( __file__ 
 from deepeval.contextvars import get_current_golden
 from deepeval.dataset import EvaluationDataset, Golden
 from deepeval.metrics import PromptAlignmentMetric, StepEfficiencyMetric, AnswerRelevancyMetric
+from deepeval.models import AnthropicModel
 from deepeval.tracing import observe, update_current_trace
 from agent_instrumented import support_agent as _support_agent
 
@@ -13,14 +14,15 @@ from agent_instrumented import support_agent as _support_agent
 def support_agent(user_input: str) -> str:
     return _support_agent( user_input )
 
-answer_relevancy = AnswerRelevancyMetric(threshold = 0.7, model = "gpt-4o")
-step_efficiency = StepEfficiencyMetric(threshold=0.5,model = "gpt-4o")
+judge = AnthropicModel(model="claude-haiku-4-5-20251001")
+answer_relevancy = AnswerRelevancyMetric(threshold=0.7, model=judge)
+step_efficiency = StepEfficiencyMetric(threshold=0.5, model=judge)
 
 prompt_alignment = PromptAlignmentMetric(
     prompt_instructions=[
         "You are a friendly customer-support agent. "
         "Keep replies short and helpful."
-    ], threshold= 0.7, model = "gpt-4o"
+    ], threshold=0.7, model=judge
 )
 
 
