@@ -18,7 +18,8 @@ evaluate(
     metrics=[
         TaskCompletionMetric(
             threshold=0.7,
-            model=AnthropicModel(model="claude-sonnet-4-6"),
+            model=AnthropicModel(model="claude-haiku-4-5-20251001"),
         )
     ],
 )
+# Only for black-box testing

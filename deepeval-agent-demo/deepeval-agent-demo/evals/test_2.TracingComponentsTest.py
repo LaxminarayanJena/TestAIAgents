@@ -5,6 +5,7 @@ sys.path.insert( 0, os.path.dirname( os.path.dirname( os.path.abspath( __file__ 
 from deepeval.contextvars import get_current_golden
 from deepeval.dataset import EvaluationDataset, Golden
 from deepeval.metrics import TaskCompletionMetric, ToolCorrectnessMetric
+from deepeval.models import AnthropicModel
 from deepeval.test_case import ToolCall
 from deepeval.tracing import observe, update_current_trace
 
@@ -25,9 +26,14 @@ def support_agent(user_input: str) -> str:
 
 
 
-task_completion = TaskCompletionMetric(threshold=0.7,model="gpt-4o")
+task_completion = TaskCompletionMetric(
+    threshold=0.7,
+    model=AnthropicModel(model="claude-haiku-4-5-20251001"),
+)
 
-tool_correctness = ToolCorrectnessMetric()
+tool_correctness = ToolCorrectnessMetric(
+    model=AnthropicModel(model="claude-haiku-4-5-20251001"),
+)
 
 dataSet = EvaluationDataset(goldens= [
     Golden(input = "Where is my order ORD-1042?",
