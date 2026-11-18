@@ -47,3 +47,4 @@ dataSet = EvaluationDataset(goldens= [
 for golden in dataSet.evals_iterator(metrics =[task_completion,tool_correctness]):
     support_agent(golden.input)
 
+#it verifies the agent not only answers correctly, but also chooses the correct tool and records the execution as a trace.
