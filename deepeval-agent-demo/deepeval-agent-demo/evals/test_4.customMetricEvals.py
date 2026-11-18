@@ -5,6 +5,7 @@ sys.path.insert( 0, os.path.dirname( os.path.dirname( os.path.abspath( __file__ 
 from deepeval.contextvars import get_current_golden
 from deepeval.dataset import EvaluationDataset, Golden
 from deepeval.metrics import GEval
+from deepeval.models import AnthropicModel
 from deepeval.test_case import SingleTurnParams
 from deepeval.tracing import observe, update_current_trace
 from agent_instrumented import support_agent as _support_agent
@@ -27,7 +28,7 @@ correctness = GEval(
         "as the expected output. Minor wording differences are acceptable; "
         "missing or wrong facts are not."
     ),
-    model="gpt-4o",
+    model=AnthropicModel(model="claude-haiku-4-5-20251001"),
     threshold=0.79,
     evaluation_params=[
         SingleTurnParams.INPUT,

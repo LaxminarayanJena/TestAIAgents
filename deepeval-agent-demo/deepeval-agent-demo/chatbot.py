@@ -1,7 +1,7 @@
 """
 chatbot.py
 ==========
-A multi-turn customer-support chatbot with tool calling, built with GPT-4o.
+A multi-turn customer-support chatbot with tool calling, built with Claude.
 
 Tools available (same data as agent_plain.py):
   - get_order_status(order_id)   → real-time shipping status from in-memory DB
@@ -30,10 +30,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import json
-from openai import OpenAI
+from anthropic import Anthropic
 
-client = OpenAI()
+client = Anthropic()
 
 # ---------------------------------------------------------------------------
 # In-memory data (same as agent_plain.py)
@@ -56,37 +55,31 @@ REFUND_POLICIES = {
 # ---------------------------------------------------------------------------
 TOOLS = [
     {
-        "type": "function",
-        "function": {
-            "name": "get_order_status",
-            "description": "Look up the shipping status of a customer order by its ID.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "order_id": {
-                        "type": "string",
-                        "description": "The order ID, e.g. ORD-1042",
-                    }
-                },
-                "required": ["order_id"],
+        "name": "get_order_status",
+        "description": "Look up the shipping status of a customer order by its ID.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "order_id": {
+                    "type": "string",
+                    "description": "The order ID, e.g. ORD-1042",
+                }
             },
+            "required": ["order_id"],
         },
     },
     {
-        "type": "function",
-        "function": {
-            "name": "get_refund_policy",
-            "description": "Return the refund/return policy for a product category.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "category": {
-                        "type": "string",
-                        "description": "Product category, e.g. electronics, clothing, food",
-                    }
-                },
-                "required": ["category"],
+        "name": "get_refund_policy",
+        "description": "Return the refund/return policy for a product category.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "description": "Product category, e.g. electronics, clothing, food",
+                }
             },
+            "required": ["category"],
         },
     },
 ]
@@ -148,37 +141,42 @@ def chat(
     tools_called = []
 
     while True:
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[{"role": "system", "content": SYSTEM_PROMPT}] + history,
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            system=SYSTEM_PROMPT,
+            messages=history,
             tools=TOOLS,
-            tool_choice="auto",
-            temperature=0,
+            max_tokens=1024,
         )
 
-        msg = response.choices[0].message
+        tool_blocks = [
+            block for block in response.content
+            if block.type == "tool_use"
+        ]
 
-        # No tool call — final answer
-        if not msg.tool_calls:
-            reply = msg.content
+        if not tool_blocks:
+            reply = "".join(
+                block.text for block in response.content
+                if block.type == "text"
+            )
             history = history + [{"role": "assistant", "content": reply}]
             return reply, history, tools_called
 
-        # Execute every tool the model requested, then loop back
-        history = history + [msg]          # append the assistant's tool-call message
-        for tc in msg.tool_calls:
-            args = json.loads(tc.function.arguments)
-            result = _execute_tool(tc.function.name, args)
+        history = history + [{"role": "assistant", "content": response.content}]
+        tool_results = []
+        for tool_block in tool_blocks:
+            result = _execute_tool(tool_block.name, tool_block.input)
             tools_called.append({
-                "name":   tc.function.name,
-                "args":   args,
+                "name": tool_block.name,
+                "args": tool_block.input,
                 "result": result,
             })
-            history = history + [{
-                "role":         "tool",
-                "tool_call_id": tc.id,
-                "content":      result,
-            }]
+            tool_results.append({
+                "type": "tool_result",
+                "tool_use_id": tool_block.id,
+                "content": result,
+            })
+        history = history + [{"role": "user", "content": tool_results}]
 
 
 # ---------------------------------------------------------------------------
