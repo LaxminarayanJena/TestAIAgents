@@ -12,6 +12,7 @@ from deepeval.dataset import Golden
 from deepeval.dataset import Golden, EvaluationDataset
 from deepeval.metrics import ContextualPrecisionMetric, ContextualRecallMetric, AnswerRelevancyMetric, \
     FaithfulnessMetric
+from deepeval.models import AnthropicModel
 from deepeval.tracing import observe, update_current_trace
 
 from rag_agent import rag_support_agent as _rag_support_agent
@@ -42,27 +43,29 @@ dataset = EvaluationDataset(goldens = [
         ),
     ),])
 
+judge = AnthropicModel(model="claude-haiku-4-5-20251001")
+
 precisionMetric = ContextualPrecisionMetric(
     threshold=0.7,
-    model = "gpt-4o"
+    model=judge,
 
 )
 recallMetric = ContextualRecallMetric(
     threshold=0.7,
-    model="gpt-4o",
+    model=judge,
     include_reason=True
 )
 
 relevancyMetric = AnswerRelevancyMetric(
     threshold=0.7,
-    model="gpt-4o",
+    model=judge,
     include_reason=True
 )
 
 
 faithfulMetric = FaithfulnessMetric(
     threshold=0.7,
-    model="gpt-4o",
+    model=judge,
     include_reason=True
 )
 

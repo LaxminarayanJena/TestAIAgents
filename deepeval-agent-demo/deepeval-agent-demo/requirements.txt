@@ -2,6 +2,8 @@ deepeval
 langchain
 langchain-openai
 langchain-anthropic
+langchain-huggingface
+sentence-transformers
 langgraph
 langchain-core
 openai

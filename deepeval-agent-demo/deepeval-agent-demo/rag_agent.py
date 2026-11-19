@@ -5,7 +5,7 @@ A customer-support agent that answers questions by retrieving from a small
 in-memory policy knowledge base instead of calling fixed lookup functions.
 
 Architecture:
-  - Knowledge base: 9 policy documents stored as embeddings (OpenAI)
+    - Knowledge base: 9 policy documents stored as local sentence embeddings
   - Vector store: langchain_core InMemoryVectorStore (no external DB needed)
   - Tool: search_policies(query) — semantic search, returns top-3 chunks
   - LLM: GPT-4o (same as agent_plain.py, just with retrieval instead of hard-coded data)
@@ -24,7 +24,7 @@ load_dotenv()
 from langchain_core.tools import tool
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_anthropic import ChatAnthropic
-from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.agents import create_agent
 
 from deepeval.integrations.langchain import CallbackHandler
@@ -77,7 +77,7 @@ POLICY_DOCS = [
 # ---------------------------------------------------------------------------
 # Build the vector store once at import time.
 # ---------------------------------------------------------------------------
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 vector_store = InMemoryVectorStore(embedding=embeddings)
 vector_store.add_texts(POLICY_DOCS)
 
@@ -103,7 +103,7 @@ def search_policies(query: str) -> str:
 # ---------------------------------------------------------------------------
 # Agent
 # ---------------------------------------------------------------------------
-llm = ChatAnthropic(model="claude-sonnet-4-6", temperature=0)
+llm = ChatAnthropic(model="claude-sonnet-4-6")
 
 agent = create_agent(
     model=llm,

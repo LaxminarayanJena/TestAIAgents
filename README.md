@@ -18,9 +18,11 @@ Calculates the GEval score.
 Passes or fails it against threshold=0.79.
 Displays and stores the evaluation result.
 
-/br>
+</br>
 https://deepeval.com/docs/evaluation-end-to-end-single-turn /br>
 Single Turn </br>
 TurnRelevancyMetric() for Multi-Turn </br>
 
-ConversationalGEval for multiturn,gEval for single turn
+ConversationalGEval for multiturn,gEval for single turn </br>
+
+RAG stands for Retrieval-Augmented Generation. It means the AI retrieves relevant information first, then uses it to generate an answer.uses semantic search sends 3-5 chunks
