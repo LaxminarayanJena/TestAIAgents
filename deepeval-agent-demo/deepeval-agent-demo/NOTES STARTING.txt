@@ -1,0 +1,3 @@
+pip install -r requirements.txt
+
+".\.venv\Scripts\python.exe" ".\evals\test_2.TracingComponentsTest.py"
