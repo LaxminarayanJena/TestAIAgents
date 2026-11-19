@@ -20,6 +20,7 @@ Displays and stores the evaluation result.
 
 </br>
 https://deepeval.com/docs/evaluation-end-to-end-single-turn </br>
+https://www.trydeepteam.com/docs/red-teaming-adversarial-attacks-emotional-manipulation </br>
 Single Turn </br>
 TurnRelevancyMetric() for Multi-Turn </br>
 
